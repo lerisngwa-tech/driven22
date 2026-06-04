@@ -10,8 +10,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-type: "external"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-    service.beta.kubernetes.io/aws-load-balancer-subnets: >-
-      subnet-000a4d4a54c226a5f,subnet-0bce3c6863303e601,subnet-0f5f0f49592bd8edb,subnet-024384191ccbfc44b
+    service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-0f5f0f49592bd8edb,subnet-024384191ccbfc44b"
 spec:
   type: LoadBalancer
   selector:
