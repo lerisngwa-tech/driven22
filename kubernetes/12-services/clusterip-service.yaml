@@ -1,0 +1,20 @@
+# ClusterIP Service — the DEFAULT service type.
+# Only accessible WITHIN the cluster. Other pods can reach it via:
+#   http://landmark-clusterip.landmark.svc.cluster.local
+# Use case: internal microservices that don't need external access.
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmark-clusterip
+  namespace: landmark
+  labels:
+    app: landmark-svc-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: landmark-svc-demo
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP

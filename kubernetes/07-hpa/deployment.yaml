@@ -1,0 +1,34 @@
+# Deployment targeted by the HPA.
+# Starts with 2 replicas, HPA can scale up to 6 based on CPU load.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-hpa-demo
+  namespace: landmark
+  labels:
+    app: landmark-hpa-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: landmark-hpa-app
+  template:
+    metadata:
+      labels:
+        app: landmark-hpa-app
+    spec:
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: landmark-config
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

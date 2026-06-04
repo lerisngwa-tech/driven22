@@ -1,0 +1,15 @@
+# With Ingress, the service can be ClusterIP (internal only).
+# The Ingress controller handles external traffic routing.
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmark-app-service
+  namespace: landmark
+spec:
+  type: ClusterIP
+  selector:
+    app: landmark-app
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP

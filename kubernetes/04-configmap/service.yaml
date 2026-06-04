@@ -1,0 +1,14 @@
+# Service to expose the ConfigMap-backed deployment.
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmark-config-service
+  namespace: landmark
+spec:
+  type: LoadBalancer
+  selector:
+    app: landmark-config-app
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP

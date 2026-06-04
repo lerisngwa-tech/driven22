@@ -1,0 +1,23 @@
+# Ingress provides HTTP routing, SSL termination, and path-based routing.
+# Requires an Ingress Controller (e.g., AWS ALB Ingress Controller).
+# This replaces multiple LoadBalancer services with a single entry point.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: landmark-ingress
+  namespace: landmark
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: landmark-app-service
+            port:
+              number: 80

@@ -1,0 +1,14 @@
+# PersistentVolumeClaim (PVC) is a request for storage by a pod.
+# The StorageClass will dynamically provision an EBS volume to satisfy this claim.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: landmark-pvc
+  namespace: landmark
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: ebs-gp3
+  resources:
+    requests:
+      storage: 5Gi

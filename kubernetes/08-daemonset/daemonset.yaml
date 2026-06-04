@@ -1,0 +1,42 @@
+# A DaemonSet ensures one pod runs on EVERY node in the cluster.
+# Common use cases: log collectors, monitoring agents, node-level networking.
+# When a new node is added, the DaemonSet automatically schedules a pod on it.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: landmark-fluentd
+  namespace: landmark
+  labels:
+    app: landmark-logging
+spec:
+  selector:
+    matchLabels:
+      app: landmark-logging
+  template:
+    metadata:
+      labels:
+        app: landmark-logging
+    spec:
+      containers:
+      - name: fluentd
+        image: fluent/fluentd:v1.16-1
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "200m"
+            memory: "400Mi"
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: containers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: containers
+        hostPath:
+          path: /var/lib/docker/containers

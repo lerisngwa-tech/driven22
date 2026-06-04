@@ -1,0 +1,24 @@
+# LoadBalancer Service — provisions an external AWS ELB.
+# Accessible via the ELB DNS name from the internet.
+# On AWS: creates a Classic Load Balancer by default, or NLB with annotation.
+# Use case: exposing a single service directly to the internet.
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmark-loadbalancer
+  namespace: landmark
+  labels:
+    app: landmark-svc-demo
+  annotations:
+    # Use NLB instead of Classic LB
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  type: LoadBalancer
+  selector:
+    app: landmark-svc-demo
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP

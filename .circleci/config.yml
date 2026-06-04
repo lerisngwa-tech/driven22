@@ -1,0 +1,78 @@
+version: 2.1
+
+orbs:
+  aws-eks: circleci/aws-eks@2.2
+  kubernetes: circleci/kubernetes@1.3
+
+executors:
+  default:
+    docker:
+      - image: cimg/base:2024.01
+
+jobs:
+  build-and-push:
+    executor: default
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.24
+      - run:
+          name: Build Docker image
+          command: |
+            IMAGE_TAG=${CIRCLE_SHA1:0:7}
+            docker build -t ${DOCKER_REPO}:${IMAGE_TAG} .
+            docker tag ${DOCKER_REPO}:${IMAGE_TAG} ${DOCKER_REPO}:latest
+      - run:
+          name: Push to Docker Hub
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            IMAGE_TAG=${CIRCLE_SHA1:0:7}
+            docker push ${DOCKER_REPO}:${IMAGE_TAG}
+            docker push ${DOCKER_REPO}:latest
+
+  deploy-to-eks:
+    executor: default
+    steps:
+      - checkout
+      - run:
+          name: Install kubectl & AWS CLI
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip && sudo ./aws/install
+      - run:
+          name: Configure kubeconfig
+          command: aws eks update-kubeconfig --name landmark-eks-cluster --region us-east-1
+      - run:
+          name: Set image in manifests
+          command: |
+            IMAGE_TAG=${CIRCLE_SHA1:0:7}
+            sed -i "s|chafah/devopsapp:latest|${DOCKER_REPO}:${IMAGE_TAG}|g" kubernetes/03-deployment/deployment.yaml
+      - run:
+          name: Deploy application
+          command: |
+            kubectl apply -f kubernetes/01-namespace/namespace.yaml
+            kubectl apply -f kubernetes/04-configmap/configmap.yaml
+            kubectl apply -f kubernetes/03-deployment/deployment.yaml
+            kubectl apply -f kubernetes/03-deployment/service.yaml
+      - run:
+          name: Get LoadBalancer URL
+          command: |
+            echo "Waiting for LoadBalancer..."
+            sleep 30
+            kubectl get svc landmark-app-service -n landmark
+
+workflows:
+  build-deploy:
+    jobs:
+      - build-and-push:
+          context: docker-credentials
+      - hold-deploy:
+          type: approval
+          requires:
+            - build-and-push
+      - deploy-to-eks:
+          context: aws-credentials
+          requires:
+            - hold-deploy

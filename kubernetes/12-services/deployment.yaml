@@ -1,0 +1,31 @@
+# Shared deployment used by all service types in this demo.
+# All services select pods with label: app=landmark-svc-demo
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-svc-demo
+  namespace: landmark
+  labels:
+    app: landmark-svc-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: landmark-svc-demo
+  template:
+    metadata:
+      labels:
+        app: landmark-svc-demo
+    spec:
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

@@ -1,0 +1,15 @@
+{
+    "name": "landmark-nodejs-image",
+    "version": "1.0.0",
+    "description": "Landmark Technology Demo App",
+    "author": "Landmark Technology", 
+    "license": "MIT",
+    "main": "app.js",
+    "keywords": [
+    "nodejs", 
+    "bootstrap", 
+    "express"
+    ], 
+    "dependencies": {
+    "express": "^4.16.4" }
+}

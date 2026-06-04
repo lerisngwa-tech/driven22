@@ -1,0 +1,36 @@
+# This Deployment mounts secrets as environment variables.
+# Secrets are injected at runtime - never baked into images.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-secret-demo
+  namespace: landmark
+  labels:
+    app: landmark-secret-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: landmark-secret-app
+  template:
+    metadata:
+      labels:
+        app: landmark-secret-app
+    spec:
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: landmark-config
+        - secretRef:
+            name: landmark-secret
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

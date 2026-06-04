@@ -1,0 +1,24 @@
+# Ingress — routes external HTTP traffic to ClusterIP services based on paths/hosts.
+# NOT a service type, but works WITH services. Requires an Ingress Controller.
+# On AWS: uses ALB (Application Load Balancer).
+# Use case: multiple services behind one load balancer with path/host routing.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: landmark-ingress-demo
+  namespace: landmark
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: landmark-clusterip
+            port:
+              number: 80
