@@ -1,0 +1,38 @@
+# Deployment that mounts the PVC as a volume.
+# Data written to /data persists even if the pod is deleted and recreated.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-pvc-demo
+  namespace: landmark
+  labels:
+    app: landmark-pvc-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: landmark-pvc-app
+  template:
+    metadata:
+      labels:
+        app: landmark-pvc-app
+    spec:
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: landmark-pvc

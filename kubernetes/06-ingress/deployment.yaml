@@ -1,0 +1,34 @@
+# Deployment used with the Ingress demo.
+# Traffic flows: Internet → Ingress (ALB) → Service → Pods
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-ingress-demo
+  namespace: landmark
+  labels:
+    app: landmark-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: landmark-app
+  template:
+    metadata:
+      labels:
+        app: landmark-app
+    spec:
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: landmark-config
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

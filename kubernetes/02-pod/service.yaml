@@ -1,0 +1,16 @@
+# Service to expose the standalone Pod.
+# This gives the pod a stable network endpoint.
+# selector matches the pod's label: app=landmark-pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmark-pod-service
+  namespace: landmark
+spec:
+  type: LoadBalancer
+  selector:
+    app: landmark-pod
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP

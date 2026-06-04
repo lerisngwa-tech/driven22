@@ -1,0 +1,35 @@
+# Deployment that consumes the secret created by ExternalSecret.
+# The pod sees regular env vars — it doesn't know they came from AWS Secrets Manager.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-es-demo
+  namespace: landmark
+  labels:
+    app: landmark-es-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: landmark-es-app
+  template:
+    metadata:
+      labels:
+        app: landmark-es-app
+    spec:
+      serviceAccountName: external-secrets-sa
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: landmark-app-secret
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

@@ -1,0 +1,11 @@
+# ConfigMap stores non-sensitive configuration as key-value pairs.
+# The deployment below will consume these as environment variables.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: landmark-config
+  namespace: landmark
+data:
+  APP_NAME: "Landmark Technology"
+  NODE_ENV: "production"
+  PORT: "8080"

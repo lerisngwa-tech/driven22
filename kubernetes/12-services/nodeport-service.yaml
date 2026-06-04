@@ -1,0 +1,21 @@
+# NodePort Service — exposes the service on a static port on EVERY node's IP.
+# Accessible at: http://<any-node-ip>:<nodePort>
+# Port range: 30000-32767
+# Use case: development/testing, or when you have your own load balancer.
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmark-nodeport
+  namespace: landmark
+  labels:
+    app: landmark-svc-demo
+spec:
+  type: NodePort
+  selector:
+    app: landmark-svc-demo
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    nodePort: 30080
+    protocol: TCP

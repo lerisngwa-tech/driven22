@@ -1,0 +1,16 @@
+# A standalone Pod - the smallest deployable unit in Kubernetes.
+# This runs a single container but has NO self-healing or scaling.
+# If this pod dies, it stays dead. That's why we need Deployments (next step).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: landmark-pod
+  namespace: landmark
+  labels:
+    app: landmark-pod
+spec:
+  containers:
+  - name: nodejs
+    image: chafah/devopsapp:latest
+    ports:
+    - containerPort: 8080

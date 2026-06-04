@@ -1,0 +1,53 @@
+# StatefulSet is for stateful applications that need:
+#   - Stable network identity (pod-0, pod-1, pod-2)
+#   - Stable persistent storage (each pod gets its own PVC)
+#   - Ordered deployment and scaling
+# Common use cases: databases (MySQL, PostgreSQL), message queues (Kafka), caches (Redis)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: landmark-mysql
+  namespace: landmark
+spec:
+  serviceName: landmark-mysql-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: landmark-mysql
+  template:
+    metadata:
+      labels:
+        app: landmark-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
+        - name: MYSQL_DATABASE
+          value: landmark_db
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: ebs-gp3
+      resources:
+        requests:
+          storage: 10Gi

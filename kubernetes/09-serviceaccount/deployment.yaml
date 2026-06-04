@@ -1,0 +1,32 @@
+# Deployment that uses the ServiceAccount.
+# The pod inherits the IAM role via IRSA and the RBAC permissions via the Role.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmark-sa-demo
+  namespace: landmark
+  labels:
+    app: landmark-sa-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: landmark-sa-app
+  template:
+    metadata:
+      labels:
+        app: landmark-sa-app
+    spec:
+      serviceAccountName: landmark-sa
+      containers:
+      - name: nodejs
+        image: chafah/devopsapp:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
