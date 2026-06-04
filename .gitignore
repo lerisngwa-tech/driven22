@@ -6,3 +6,4 @@ node_modules/
 *.tfvars
 vvvkubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 my name is leris and i am a devops engineer
+bundle install
